@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Green Shift Nigeria</title>
+  <meta name="description" content="Turn smoke into sunlight. See what your generator really costs, predict blocked-drain floods before the rain, and measure the everyday habits that add up — built for Green Shift Hacks." />
+  <meta name="theme-color" content="#060a09" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="assets/styles/main.css" />
+  <script src="assets/scripts/main.js" defer></script>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <svg class="loader-leaf" viewBox="0 0 64 64">
+      <path d="M12 52 C12 26 30 10 54 10 C54 36 38 52 12 52 Z" />
+      <path d="M12 52 L40 24" />
+    </svg>
+    <span class="loader-word">Green Shift</span>
+  </div>
+
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+  <div class="toast-stack" id="toasts" aria-live="polite"></div>
+
+  <!-- Navigation -->
+  <header class="nav" id="nav">
+    <a href="#top" class="brand">
+      <span class="brand-mark"><i class="fa-solid fa-leaf"></i></span>
+      <span class="brand-text">
+        <b>Green Shift</b>
+        <small>Nigeria · Hacks 2026</small>
+      </span>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#power">Power Shift</a>
+      <a href="#drain">DrainGuard</a>
+      <a href="#habits">Loop &amp; Lean</a>
+      <a href="#act">Act</a>
+      <a href="#story">Story</a>
+    </nav>
+
+    <button class="mode-switch" id="modeSwitch" type="button" aria-pressed="false" aria-label="Switch the city between generator smoke and solar">
+      <span class="mode-track"><span class="mode-thumb"><i class="fa-solid fa-smog"></i></span></span>
+      <span class="mode-label" id="modeLabel">Smoke</span>
+    </button>
+
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <!-- HERO -->
+  <header class="hero" id="top">
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="hero-fade"></div>
+
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="pulse-dot"></span> Green Shift Hacks · Built for Nigeria’s everyday systems</p>
+
+        <h1 class="hero-title">
+          <span class="line"><span>Turn smoke</span></span>
+          <span class="line"><span>into <em class="grad" id="heroWord">sunlight.</em></span></span>
+        </h1>
+
+        <p class="hero-sub">
+          Millions of homes run on petrol for hours every day, while plastic chokes the drains that flood our streets.
+          Green Shift turns those everyday problems into <strong>clear numbers and next steps</strong>.
+        </p>
+
+        <div class="shift-control">
+          <div class="shift-head">
+            <label for="shift">Drag to shift the city</label>
+            <span class="shift-pct" id="shiftPct">0% solar</span>
+          </div>
+          <input id="shift" type="range" min="0" max="100" value="0" />
+          <div class="shift-ends"><span><i class="fa-solid fa-gas-pump"></i> Generator</span><span>Solar <i class="fa-solid fa-sun"></i></span></div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#power" class="btn btn-primary magnetic"><span>Calculate my home</span> <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="#drain" class="btn btn-ghost magnetic"><i class="fa-solid fa-satellite-dish"></i> <span>See DrainGuard</span></a>
+        </div>
+      </div>
+
+      <aside class="hero-hud" aria-label="Live city readings (illustrative)">
+        <div class="hud-row">
+          <span class="hud-label"><i class="fa-solid fa-wind"></i> Air quality</span>
+          <b class="hud-val" id="hudAir">182</b>
+          <span class="hud-tag" id="hudAirTag">Unhealthy</span>
+        </div>
+        <div class="hud-row">
+          <span class="hud-label"><i class="fa-solid fa-volume-high"></i> Street noise</span>
+          <b class="hud-val" id="hudNoise">78 dB</b>
+          <span class="hud-tag" id="hudNoiseTag">Loud</span>
+        </div>
+        <div class="hud-row">
+          <span class="hud-label"><i class="fa-solid fa-cloud"></i> Neighbourhood CO₂</span>
+          <b class="hud-val" id="hudCo2">100%</b>
+          <span class="hud-tag" id="hudCo2Tag">Today</span>
+        </div>
+        <p class="hud-note">Illustrative readings that follow the slider.</p>
+      </aside>
+    </div>
+
+    <a href="#problem" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+  </header>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Generator smoke</span><i>✦</i><span>Blocked drains</span><i>✦</i><span>Flash floods</span><i>✦</i><span>Petrol bills</span><i>✦</i><span>Plastic waste</span><i>✦</i><span>Water leaks</span><i>✦</i><span>E-waste</span><i>✦</i><span>Food loss</span><i>✦</i>
+      <span>Generator smoke</span><i>✦</i><span>Blocked drains</span><i>✦</i><span>Flash floods</span><i>✦</i><span>Petrol bills</span><i>✦</i><span>Plastic waste</span><i>✦</i><span>Water leaks</span><i>✦</i><span>E-waste</span><i>✦</i><span>Food loss</span><i>✦</i>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- PROBLEM -->
+    <section class="section problem" id="problem">
+      <div class="wrap">
+        <p class="kicker" data-reveal>The problem</p>
+        <h2 class="statement" data-reveal>
+          Awareness is everywhere. <span class="dim">What people lack is a tool that says</span>
+          <em class="grad">how much, where, and what to do next.</em>
+        </h2>
+
+        <div class="stat-grid">
+          <article class="stat card" data-reveal style="--d:0">
+            <span class="stat-icon smog"><i class="fa-solid fa-gas-pump"></i></span>
+            <b class="stat-num"><span data-count="242">0</span><small>L</small></b>
+            <p>of petrol burned every month by a typical 3&nbsp;kVA generator running 8 hours a day.</p>
+          </article>
+          <article class="stat card" data-reveal style="--d:1">
+            <span class="stat-icon sun"><i class="fa-solid fa-naira-sign"></i></span>
+            <b class="stat-num"><small>₦</small><span data-count="217728">0</span></b>
+            <p>spent on that fuel each month at ₦900 a litre, and it never stops.</p>
+          </article>
+          <article class="stat card" data-reveal style="--d:2">
+            <span class="stat-icon danger"><i class="fa-solid fa-smog"></i></span>
+            <b class="stat-num"><span data-count="6706">0</span><small>kg</small></b>
+            <p>of CO₂ released a year by one home. A street of them is a cloud you can see.</p>
+          </article>
+        </div>
+        <p class="fineprint" data-reveal>Figures come from the Power Shift model below (0.48 load factor, 0.7 L/kWh, 2.31 kg CO₂/L). Change the assumptions yourself in the Story section.</p>
+      </div>
+    </section>
+
+    <!-- PLATFORM -->
+    <section class="section platform" id="platform">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker" data-reveal>One platform · three live prototypes</p>
+          <h2 data-reveal>Measure it. Map it. <em class="grad">Shift it.</em></h2>
+          <p class="lead" data-reveal>Each module starts from a real behaviour or system, then shows the next step and its effect in numbers.</p>
+        </div>
+
+        <div class="module-grid">
+          <a href="#power" class="module card tilt" data-reveal style="--d:0">
+            <span class="module-no">01</span>
+            <span class="module-icon sun"><i class="fa-solid fa-solar-panel"></i></span>
+            <h3>Power Shift</h3>
+            <p>See what your generator really costs in naira, litres and CO₂, and when solar pays for itself.</p>
+            <span class="module-link">Open calculator <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+          <a href="#drain" class="module card tilt featured" data-reveal style="--d:1">
+            <span class="badge"><i class="fa-solid fa-star"></i> Top pick</span>
+            <span class="module-no">02</span>
+            <span class="module-icon water"><i class="fa-solid fa-house-flood-water"></i></span>
+            <h3>DrainGuard</h3>
+            <p>Residents report blocked drains; the risk engine weighs blockage against the rain forecast and ranks cleanup crews.</p>
+            <span class="module-link">Run the radar <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+          <a href="#habits" class="module card tilt" data-reveal style="--d:2">
+            <span class="module-no">03</span>
+            <span class="module-icon leaf"><i class="fa-solid fa-recycle"></i></span>
+            <h3>Loop &amp; Lean</h3>
+            <p>Pick an everyday choice and see the water, energy, waste and CO₂ it saves in a week and a year.</p>
+            <span class="module-link">Score a habit <i class="fa-solid fa-arrow-right"></i></span>
+          </a>
+        </div>
+
+        <div class="roadmap" data-reveal>
+          <span class="roadmap-label">On the roadmap</span>
+          <span class="chip"><i class="fa-solid fa-droplet"></i> AquaWatch: leak reporting</span>
+          <span class="chip"><i class="fa-solid fa-utensils"></i> FoodLoop: surplus rescue</span>
+          <span class="chip"><i class="fa-solid fa-screwdriver-wrench"></i> ReBuild: repair network</span>
+          <span class="chip"><i class="fa-solid fa-cubes-stacked"></i> MaterialMind: scrap marketplace</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- POWER SHIFT -->
+    <section class="section power" id="power">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker" data-reveal><span class="num">01</span> Power Shift</p>
+          <h2 data-reveal>What does your generator <em class="grad">really</em> cost?</h2>
+          <p class="lead" data-reveal>Move the sliders to match your home. Everything updates live.</p>
+        </div>
+
+        <div class="calc">
+          <div class="calc-inputs card" data-reveal>
+            <div class="field">
+              <div class="field-head"><label for="st">Your state</label></div>
+              <div class="select"><select id="st"></select><i class="fa-solid fa-chevron-down"></i></div>
+              <small id="stNote">Regional sunshine estimate.</small>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="kva">Generator size</label><output id="kvaO">3 kVA</output></div>
+              <input id="kva" type="range" min="1" max="10" step="0.5" value="3" />
+              <small>Printed on the generator, in kVA.</small>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="hrs">Hours running each day</label><output id="hrsO">8 h</output></div>
+              <input id="hrs" type="range" min="1" max="18" step="1" value="8" />
+              <small>Add up every time it is switched on.</small>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="pr">Petrol price per litre</label><output id="prO">₦900</output></div>
+              <input id="pr" type="range" min="500" max="1500" step="10" value="900" />
+              <small>What you paid at the pump this week.</small>
+            </div>
+          </div>
+
+          <div class="calc-out card" data-reveal aria-live="polite">
+            <div class="metrics">
+              <div class="metric"><b id="oMonth">–</b><span>on petrol each month</span></div>
+              <div class="metric"><b id="oL">–</b><span>litres burned each month</span></div>
+              <div class="metric"><b id="oCo2">–</b><span>kg CO₂ released each year</span></div>
+            </div>
+
+            <p class="verdict" id="verdict"></p>
+
+            <div class="chart">
+              <svg viewBox="0 0 600 270" role="img" aria-label="Cumulative petrol cost compared with a one-time solar purchase over five years">
+                <defs>
+                  <linearGradient id="genFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#f2674d" stop-opacity=".28" />
+                    <stop offset="1" stop-color="#f2674d" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <g id="grid"></g>
+                <path id="aGen" fill="url(#genFill)"></path>
+                <path id="pGen" class="ln gen"></path>
+                <path id="pSol" class="ln sol"></path>
+                <g id="cross"></g>
+              </svg>
+              <div class="legend">
+                <span><i class="sw gen"></i>Petrol, adding up</span>
+                <span><i class="sw sol"></i>Solar, bought once</span>
+              </div>
+            </div>
+
+            <div class="trees" id="trees" aria-hidden="true"></div>
+            <p class="tree-note" id="treeCap"></p>
+          </div>
+        </div>
+
+        <!-- What the smoke does -->
+        <div class="impact card" data-reveal>
+          <div class="impact-head">
+            <div>
+              <h3><i class="fa-solid fa-lungs"></i> What the smoke does to your street</h3>
+              <p>Illustrative indicators that move with your daily running hours and generator size.</p>
+            </div>
+            <span class="pill" id="impactPill">High exposure</span>
+          </div>
+          <div class="meters">
+            <div class="meter">
+              <div class="meter-head"><span>Clean air near the home</span><b id="mAir">0%</b></div>
+              <div class="meter-bar"><i id="mAirBar"></i></div>
+              <p>Exhaust adds carbon monoxide, NOx and fine particles (PM2.5) right where people live and sleep.</p>
+            </div>
+            <div class="meter">
+              <div class="meter-head"><span>Street-tree vitality</span><b id="mTree">0%</b></div>
+              <div class="meter-bar"><i id="mTreeBar"></i></div>
+              <p>Soot coats leaves and NOx feeds ground-level ozone, which stresses plants and lowers growth.</p>
+            </div>
+            <div class="meter">
+              <div class="meter-head"><span>Breathing comfort for children</span><b id="mLung">0%</b></div>
+              <div class="meter-bar"><i id="mLungBar"></i></div>
+              <p>Children, elders and pets breathe closest to the exhaust and feel it first.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="alerts" id="mine"></div>
+      </div>
+    </section>
+
+    <!-- DRAINGUARD -->
+    <section class="section drain" id="drain">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker" data-reveal><span class="num">02</span> DrainGuard · working prototype</p>
+          <h2 data-reveal>Clear the drain <em class="grad">before</em> the rain.</h2>
+          <p class="lead" data-reveal>Plastic + blocked channels + a heavy downpour = a flood you can predict. Report a drain, and the risk engine ranks where crews should go first.</p>
+          <span class="sim-tag" data-reveal><i class="fa-solid fa-database"></i> Simulated data for demonstration</span>
+        </div>
+
+        <ol class="pipeline" data-reveal>
+          <li><span>1</span>Detect blockage</li>
+          <li><span>2</span>Weigh rain forecast</li>
+          <li><span>3</span>Rank &amp; dispatch</li>
+          <li><span>4</span>Measure impact</li>
+        </ol>
+
+        <div class="drain-grid">
+          <!-- Report form -->
+          <form class="report card" id="reportForm" data-reveal>
+            <h3><i class="fa-solid fa-camera"></i> Report a drain</h3>
+
+            <div class="field">
+              <label for="zoneSelect">Corridor</label>
+              <div class="select"><select id="zoneSelect"></select><i class="fa-solid fa-chevron-down"></i></div>
+            </div>
+
+            <div class="field">
+              <label>Photo evidence</label>
+              <label class="drop" id="drop" for="fileInput">
+                <input type="file" id="fileInput" accept="image/*" hidden />
+                <span class="drop-empty" id="dropEmpty">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <b>Add a photo</b>
+                  <small>or <button type="button" class="link-btn" id="sampleBtn">use a sample scan</button></small>
+                </span>
+                <span class="drop-preview" id="dropPreview" hidden>
+                  <img id="previewImg" alt="Uploaded drain photo" />
+                  <span class="scanline"></span>
+                </span>
+              </label>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><label for="severity">Observed blockage</label><output id="severityO">75%</output></div>
+              <input type="range" id="severity" min="10" max="100" value="75" />
+            </div>
+
+            <div class="field">
+              <label for="notes">What did you see?</label>
+              <textarea id="notes" rows="2" placeholder="e.g. Plastic bottles and silt blocking the culvert by the market gate"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="submitBtn"><i class="fa-solid fa-microchip"></i> <span>Run risk assessment</span></button>
+
+            <div class="ai-out" id="aiOut">
+              <div class="ai-head"><span><i class="fa-solid fa-bolt"></i> Risk engine output</span><span class="mono" id="aiConf">Confidence —</span></div>
+              <div class="ai-grid">
+                <div><small>Likely waste mix</small><b id="aiMix">—</b></div>
+                <div><small>Risk index</small><b id="aiRisk">—</b></div>
+              </div>
+              <p id="aiRec">Submit a report to see a recommendation.</p>
+            </div>
+          </form>
+
+          <!-- Radar map -->
+          <div class="radar-wrap">
+            <div class="radar card" data-reveal>
+              <div class="radar-bar">
+                <span><i class="fa-solid fa-satellite-dish"></i> Flood-risk radar</span>
+                <button type="button" class="rain-btn on" id="rainBtn" aria-pressed="true"><i class="fa-solid fa-cloud-showers-heavy"></i> <span>Forecast: heavy rain</span></button>
+              </div>
+              <div class="radar-stage" id="radarStage">
+                <svg id="mapSvg" viewBox="0 0 500 410" aria-label="Stylised map of Nigeria with drain risk hotspots"></svg>
+                <div class="sweep" aria-hidden="true"></div>
+                <div class="rain" id="rain" aria-hidden="true"></div>
+              </div>
+              <div class="radar-foot">
+                <div>
+                  <small>Selected</small>
+                  <b id="selName">—</b>
+                </div>
+                <div>
+                  <small>Status</small>
+                  <b id="selStatus">—</b>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" id="dispatchBtn"><i class="fa-solid fa-truck"></i> Dispatch crew</button>
+              </div>
+            </div>
+
+            <div class="queue card" data-reveal>
+              <div class="queue-head">
+                <h4><i class="fa-solid fa-list-ol"></i> Response priority queue</h4>
+                <div class="queue-stats">
+                  <span><b id="clearedCount">0</b> drains cleared</span>
+                  <span><b id="divertedCount">0</b> kg waste removed</span>
+                </div>
+              </div>
+              <ul class="queue-list" id="queue"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOOP & LEAN -->
+    <section class="section habits" id="habits">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker" data-reveal><span class="num">03</span> Loop &amp; Lean</p>
+          <h2 data-reveal>Small habits. <em class="grad">Stacked weekly.</em></h2>
+          <p class="lead" data-reveal>Choose an everyday decision. Repeated wins add up faster than one big gesture.</p>
+        </div>
+
+        <div class="habit-grid">
+          <div class="habit-pick card" data-reveal>
+            <p class="field-label">What are you deciding?</p>
+            <div class="chips" id="habitChips" role="radiogroup" aria-label="Everyday action"></div>
+
+            <div class="field">
+              <div class="field-head"><label for="freq">How often each week?</label><output id="freqO">3 times</output></div>
+              <input id="freq" type="range" min="1" max="14" value="3" />
+            </div>
+
+            <p class="habit-rec" id="habitRec"></p>
+          </div>
+
+          <div class="habit-result card" data-reveal>
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0" stop-color="#34d399" />
+                    <stop offset="1" stop-color="#f5b942" />
+                  </linearGradient>
+                </defs>
+                <circle cx="60" cy="60" r="52" class="ring-bg" />
+                <circle cx="60" cy="60" r="52" class="ring-fg" id="ringFg" />
+              </svg>
+              <div class="ring-center">
+                <b id="habitScore">0</b>
+                <small>impact score</small>
+              </div>
+            </div>
+            <h3 id="habitTitle">—</h3>
+
+            <div class="habit-metrics">
+              <div><i class="fa-solid fa-droplet water"></i><b id="hWater">0</b><small>L water / year</small></div>
+              <div><i class="fa-solid fa-bolt sun"></i><b id="hEnergy">0</b><small>kWh / year</small></div>
+              <div><i class="fa-solid fa-trash-can leaf"></i><b id="hWaste">0</b><small>kg waste / year</small></div>
+              <div><i class="fa-solid fa-cloud danger"></i><b id="hCo2">0</b><small>kg CO₂ / year</small></div>
+            </div>
+            <p class="fineprint" id="habitWeek"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACT -->
+    <section class="section act" id="act">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker" data-reveal>Your next move</p>
+          <h2 data-reveal>Eight actions. <em class="grad">One household.</em></h2>
+          <p class="lead" data-reveal>Tick them off as you go. Your progress stays in this browser.</p>
+        </div>
+
+        <div class="act-grid">
+          <div class="checklist card" data-reveal>
+            <div class="check-head">
+              <div class="mini-ring">
+                <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" class="ring-bg" /><circle cx="24" cy="24" r="20" class="ring-fg" id="checkRing" /></svg>
+                <b id="checkPct">0%</b>
+              </div>
+              <div>
+                <strong id="checkCount">0 of 8 done</strong>
+                <small>Start with the safety ones.</small>
+              </div>
+            </div>
+            <div id="checklist"></div>
+          </div>
+
+          <div class="safety">
+            <h3 data-reveal><i class="fa-solid fa-triangle-exclamation"></i> Stay safe while you shift</h3>
+            <div class="alert-card" data-reveal style="--d:0"><b>Carbon monoxide</b>Never run a generator indoors, in a garage or on a balcony. If someone feels dizzy near one, get them into fresh air and seek help.</div>
+            <div class="alert-card" data-reveal style="--d:1"><b>Fuel fires</b>Switch off and let the engine cool before refuelling. Never store petrol in living areas.</div>
+            <div class="alert-card" data-reveal style="--d:2"><b>Backfeeding</b>Never plug a generator into a wall socket. Have an electrician fit a changeover switch.</div>
+            <div class="alert-card" data-reveal style="--d:3"><b>Batteries &amp; e-waste</b>Keep batteries ventilated. Never burn or dump them; return them to a licensed recycler.</div>
+            <p class="emergency" data-reveal><i class="fa-solid fa-phone"></i> Emergency in Nigeria: <b>112</b></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORY -->
+    <section class="section story" id="story">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker" data-reveal>Project story</p>
+          <h2 data-reveal>Built to be <em class="grad">used</em>, not just admired.</h2>
+        </div>
+
+        <div class="story-grid">
+          <article class="story-card card" data-reveal style="--d:0">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <h3>Problem</h3>
+            <p>Nigerian homes and shops lose money and health to petrol generators, and plastic-blocked drains turn ordinary rain into floods. People know it is bad but have no numbers to act on.</p>
+          </article>
+          <article class="story-card card" data-reveal style="--d:1">
+            <i class="fa-solid fa-users"></i>
+            <h3>Who it’s for</h3>
+            <p>Households and small businesses on generators, residents who live near drains, and LGA sanitation teams that need to decide where to send crews first.</p>
+          </article>
+          <article class="story-card card" data-reveal style="--d:2">
+            <i class="fa-solid fa-route"></i>
+            <h3>Approach</h3>
+            <p>Start from a real behaviour, measure it with transparent formulas, show the next step, and keep score so progress is visible.</p>
+          </article>
+          <article class="story-card card" data-reveal style="--d:3">
+            <i class="fa-solid fa-seedling"></i>
+            <h3>Environmental benefit</h3>
+            <p>One 3&nbsp;kVA home moving to solar avoids about 6.7&nbsp;t CO₂ a year. Clearing drains before storms keeps plastic out of waterways and prevents flood losses.</p>
+          </article>
+          <article class="story-card card" data-reveal style="--d:4">
+            <i class="fa-solid fa-code"></i>
+            <h3>Tools</h3>
+            <p>HTML, CSS and vanilla JavaScript, Canvas for the city scene, and SVG for the charts and radar. No backend and no tracking; nothing leaves the browser.</p>
+          </article>
+          <article class="story-card card" data-reveal style="--d:5">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <h3>Limitations</h3>
+            <p>Drain data and the photo scan are simulated. Fuel, sunshine and solar costs are planning estimates, not quotes. Health meters are illustrative.</p>
+          </article>
+        </div>
+
+        <details class="assumptions card" data-reveal>
+          <summary><span><i class="fa-solid fa-sliders"></i> Assumptions you can change</span><i class="fa-solid fa-plus"></i></summary>
+          <div class="assume-grid">
+            <label>Litres of petrol per kWh<input id="aLkwh" type="number" step="0.05" value="0.7" /></label>
+            <label>Average load share of rated kVA<input id="aLoad" type="number" step="0.05" value="0.48" /></label>
+            <label>kg CO₂ per litre of petrol<input id="aCo2" type="number" step="0.01" value="2.31" /></label>
+            <label>kg CO₂ one tree absorbs a year<input id="aTree" type="number" step="1" value="21" /></label>
+            <label>Solar + battery cost per daily kWh (₦)<input id="aSol" type="number" step="10000" value="450000" /></label>
+          </div>
+          <ul class="limits">
+            <li>Sunshine hours are broad regional estimates, not site measurements.</li>
+            <li>Petrol prices are held flat for five years. If they rise, solar pays back sooner.</li>
+            <li>Maintenance, repairs, battery replacement and grid supply are not included.</li>
+            <li>CO₂ uses a standard tailpipe factor and ignores solar equipment life-cycle emissions.</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- FINALE -->
+    <section class="finale" id="finale">
+      <div class="wrap">
+        <h2 class="finale-title" data-reveal>Make the <em class="grad">shift.</em></h2>
+        <p data-reveal>One home, one drain, one habit at a time.</p>
+        <div class="hero-actions center" data-reveal>
+          <a href="#top" class="btn btn-primary magnetic" id="finaleShift"><i class="fa-solid fa-sun"></i> <span>Shift the city to solar</span></a>
+          <a href="#act" class="btn btn-ghost magnetic"><span>Start my checklist</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span class="brand small"><span class="brand-mark"><i class="fa-solid fa-leaf"></i></span> Green Shift Nigeria</span>
+      <p>Built for Green Shift Hacks. Open source, no tracking, no data leaves your browser.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
